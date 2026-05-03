@@ -1,0 +1,1356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>HEMANSHU REFLEX TEST — PRO SERIES</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;800;900&family=Share+Tech+Mono&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:       #080a0c;
+  --bg2:      #0c0f12;
+  --panel:    #0f1318;
+  --border:   #1a2030;
+  --border2:  #243040;
+  --cyan:     #00e5ff;
+  --cyan2:    #00b8cc;
+  --red:      #ff2244;
+  --red2:     #cc1133;
+  --green:    #00ff88;
+  --gold:     #ffcc00;
+  --orange:   #ff6600;
+  --white:    #e8f0f8;
+  --muted:    #3a4a5a;
+  --text:     #8090a0;
+  --grid-red: #ff1a33;
+  --grid-off: #1a0a0f;
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+  background: var(--bg);
+  color: var(--white);
+  font-family: 'Rajdhani', sans-serif;
+  min-height: 100vh;
+  overflow: hidden;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Scanlines */
+body::after {
+  content:''; position:fixed; inset:0; pointer-events:none; z-index:9999;
+  background: repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.06) 2px,rgba(0,0,0,0.06) 4px);
+}
+
+/* Grid background */
+body::before {
+  content:''; position:fixed; inset:0; pointer-events:none; z-index:0;
+  background-image:
+    linear-gradient(rgba(0,229,255,0.025) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(0,229,255,0.025) 1px,transparent 1px);
+  background-size: 48px 48px;
+}
+
+.screen { position:fixed; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:flex-start; z-index:10; }
+.screen.hidden { display:none !important; }
+
+/* ═══════════════════════════════════
+   BOOT / MAIN MENU
+═══════════════════════════════════ */
+#boot-screen {
+  background: var(--bg);
+  justify-content: center; align-items: center;
+  padding: 20px;
+}
+
+.boot-header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.classified-tag {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 10px; letter-spacing: 6px;
+  color: var(--red); text-transform: uppercase;
+  border: 1px solid var(--red);
+  padding: 3px 14px; border-radius: 2px;
+  margin-bottom: 16px; display: inline-block;
+  animation: classifiedBlink 1.5s step-end infinite;
+}
+@keyframes classifiedBlink { 0%,100%{opacity:1} 50%{opacity:0.4} }
+
+.boot-title {
+  font-family: 'Orbitron', sans-serif;
+  font-weight: 900;
+  font-size: clamp(22px, 5vw, 42px);
+  letter-spacing: 3px;
+  color: var(--cyan);
+  text-shadow: 0 0 40px rgba(0,229,255,0.6), 0 0 80px rgba(0,229,255,0.2);
+  line-height: 1.1;
+  animation: titleFlicker 6s ease-in-out infinite;
+}
+@keyframes titleFlicker {
+  0%,95%,100%{opacity:1} 96%{opacity:0.7} 97%{opacity:1} 98%{opacity:0.8} 99%{opacity:1}
+}
+
+.boot-sub {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 11px; letter-spacing: 4px;
+  color: var(--muted); margin-top: 8px;
+}
+
+.developer-tag {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 10px; letter-spacing: 3px;
+  color: var(--gold);
+  margin-top: 6px;
+}
+
+/* Discipline cards */
+.discipline-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  width: min(640px, 94vw);
+  margin-bottom: 28px;
+}
+
+.disc-card {
+  background: var(--panel);
+  border: 1px solid var(--border2);
+  border-radius: 4px;
+  padding: 20px 18px;
+  cursor: pointer;
+  transition: all 0.2s;
+  position: relative;
+  overflow: hidden;
+}
+.disc-card::before {
+  content:''; position:absolute; top:0; left:0; right:0; height:2px;
+  transition: background 0.2s;
+}
+.disc-card.hmi01::before { background: var(--red); }
+.disc-card.hmi02::before { background: var(--cyan); }
+.disc-card:hover { transform: translateY(-3px); }
+.disc-card.hmi01:hover { border-color: var(--red); box-shadow: 0 8px 30px rgba(255,34,68,0.2); }
+.disc-card.hmi02:hover { border-color: var(--cyan); box-shadow: 0 8px 30px rgba(0,229,255,0.2); }
+
+.disc-code {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 9px; letter-spacing: 4px;
+  margin-bottom: 6px;
+}
+.disc-card.hmi01 .disc-code { color: var(--red); }
+.disc-card.hmi02 .disc-code { color: var(--cyan); }
+
+.disc-name {
+  font-family: 'Orbitron', sans-serif;
+  font-weight: 700;
+  font-size: 16px; letter-spacing: 2px;
+  color: var(--white);
+  margin-bottom: 8px;
+}
+
+.disc-desc {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 10px; line-height: 1.7;
+  color: var(--text);
+}
+
+.disc-benchmark {
+  margin-top: 12px; padding-top: 10px;
+  border-top: 1px solid var(--border);
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 9px; letter-spacing: 1px;
+  display: flex; justify-content: space-between;
+}
+.bench-amateur { color: var(--muted); }
+.bench-god { color: var(--gold); }
+
+/* Personal bests on menu */
+.pb-row {
+  display: flex; gap: 24px;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 11px; letter-spacing: 2px; color: var(--muted);
+}
+.pb-row span { color: var(--cyan); }
+
+/* ═══════════════════════════════════
+   HMI-01: GRID START
+═══════════════════════════════════ */
+#grid-screen {
+  background: var(--bg);
+  padding: 0;
+}
+
+/* Grid HUD */
+#grid-hud {
+  width:100%; display:flex; align-items:center; justify-content:space-between;
+  padding: 10px 18px 8px;
+  border-bottom: 1px solid var(--border);
+  background: rgba(8,10,12,0.97);
+  flex-shrink:0; position:relative; z-index:20;
+}
+
+.g-stat { display:flex; flex-direction:column; align-items:center; }
+.g-stat-label { font-family:'Share Tech Mono',monospace; font-size:8px; letter-spacing:3px; color:var(--muted); }
+.g-stat-val { font-family:'Orbitron',sans-serif; font-weight:700; font-size:22px; line-height:1.1; }
+#gs-level .g-stat-val { color:var(--red); }
+#gs-target .g-stat-val { color:var(--gold); font-size:16px; padding-top:3px; }
+#gs-pb .g-stat-val { color:var(--cyan); font-size:16px; padding-top:3px; }
+#gs-last .g-stat-val { color:var(--green); font-size:16px; padding-top:3px; }
+
+/* Grid arena */
+#grid-arena {
+  flex:1; width:100%;
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  gap: 16px; padding: 16px;
+  position:relative;
+}
+
+.grid-instruction {
+  font-family:'Share Tech Mono',monospace;
+  font-size:11px; letter-spacing:3px; color:var(--muted);
+  text-align:center; line-height:1.8;
+}
+
+/* 10 nodes */
+#node-row {
+  display:flex; gap: 10px; align-items:center; justify-content:center; flex-wrap:wrap;
+  max-width: 500px;
+}
+
+.node {
+  width: clamp(38px,8vw,52px);
+  height: clamp(38px,8vw,52px);
+  border-radius: 50%;
+  background: var(--grid-off);
+  border: 2px solid #2a0a10;
+  position: relative; cursor: pointer;
+  transition: all 0.08s;
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.5);
+}
+.node.lit {
+  background: radial-gradient(circle at 38% 35%, #ff6677, var(--grid-red) 60%, #880011);
+  border-color: var(--red);
+  box-shadow:
+    0 0 20px rgba(255,34,68,0.8),
+    0 0 50px rgba(255,34,68,0.4),
+    inset 0 1px 0 rgba(255,200,200,0.3);
+  animation: nodePulse 0.5s ease-in-out infinite;
+}
+@keyframes nodePulse {
+  0%,100%{box-shadow:0 0 20px rgba(255,34,68,0.8),0 0 50px rgba(255,34,68,0.4),inset 0 1px 0 rgba(255,200,200,0.3)}
+  50%{box-shadow:0 0 30px rgba(255,34,68,1),0 0 70px rgba(255,34,68,0.6),inset 0 1px 0 rgba(255,200,200,0.3)}
+}
+.node.done {
+  background: radial-gradient(circle at 38% 35%, #44ff88, var(--green) 60%, #004422);
+  border-color: var(--green);
+  box-shadow: 0 0 15px rgba(0,255,136,0.5);
+  animation: none;
+}
+
+/* Progress bar under nodes */
+#node-progress {
+  display:flex; gap:4px;
+}
+.np-dot {
+  width:6px; height:6px; border-radius:50%;
+  background: var(--muted); transition:all 0.2s;
+}
+.np-dot.done { background: var(--green); box-shadow:0 0 6px var(--green); }
+.np-dot.active { background: var(--red); box-shadow:0 0 6px var(--red); }
+
+/* Reaction display */
+#reaction-display {
+  text-align:center;
+}
+#reaction-big {
+  font-family:'Orbitron',sans-serif; font-weight:800;
+  font-size: clamp(40px,10vw,80px); line-height:1;
+  color: var(--green);
+  text-shadow: 0 0 30px rgba(0,255,136,0.5);
+  animation: reactionPop 0.3s cubic-bezier(0.34,1.56,0.64,1);
+}
+@keyframes reactionPop{from{transform:scale(0.5);opacity:0}to{transform:scale(1);opacity:1}}
+#reaction-sub {
+  font-family:'Share Tech Mono',monospace; font-size:10px; letter-spacing:3px; color:var(--muted);
+  margin-top:4px;
+}
+
+/* Level up badge */
+#levelup-badge {
+  background: linear-gradient(135deg,rgba(255,204,0,0.15),rgba(255,204,0,0.05));
+  border:1px solid var(--gold);
+  border-radius:4px; padding:8px 20px;
+  font-family:'Orbitron',sans-serif; font-weight:700; font-size:14px; letter-spacing:3px;
+  color:var(--gold); text-shadow:0 0 20px rgba(255,204,0,0.5);
+  display:none;
+  animation: lvlPop 0.4s cubic-bezier(0.34,1.56,0.64,1);
+}
+@keyframes lvlPop{from{transform:scale(0.5) translateY(20px);opacity:0}to{transform:scale(1) translateY(0);opacity:1}}
+
+/* Grid bottom bar */
+#grid-bottom {
+  width:100%;
+  background:rgba(8,10,12,0.97);
+  border-top:1px solid var(--border);
+  padding:12px 18px;
+  display:flex; align-items:center; justify-content:space-between;
+  flex-shrink:0;
+}
+#grid-status {
+  font-family:'Share Tech Mono',monospace; font-size:11px; letter-spacing:2px; color:var(--muted);
+}
+#grid-action-btn {
+  font-family:'Orbitron',sans-serif; font-weight:700; font-size:14px; letter-spacing:3px;
+  background:transparent; border:2px solid var(--red); color:var(--red);
+  padding:10px 28px; border-radius:3px; cursor:pointer;
+  box-shadow: 0 0 20px rgba(255,34,68,0.2);
+  transition:all 0.15s;
+}
+#grid-action-btn:hover { background:rgba(255,34,68,0.1); box-shadow:0 0 30px rgba(255,34,68,0.4); }
+#grid-action-btn:active { transform:scale(0.96); }
+
+/* ═══════════════════════════════════
+   HMI-02: KINETIC FUSION
+═══════════════════════════════════ */
+#fusion-screen { background:var(--bg); }
+
+#fusion-hud {
+  width:100%; display:flex; align-items:center; justify-content:space-between;
+  padding:10px 18px 8px;
+  border-bottom:1px solid var(--border);
+  background:rgba(8,10,12,0.97);
+  flex-shrink:0; z-index:20;
+}
+.f-stat { display:flex; flex-direction:column; align-items:center; }
+.f-stat-label { font-family:'Share Tech Mono',monospace; font-size:8px; letter-spacing:3px; color:var(--muted); }
+.f-stat-val { font-family:'Orbitron',sans-serif; font-weight:700; font-size:22px; line-height:1.1; }
+#fs-score .f-stat-val { color:var(--cyan); }
+#fs-combo .f-stat-val { color:var(--gold); }
+#fs-react .f-stat-val { color:var(--green); font-size:16px; padding-top:3px; }
+
+/* Lives */
+#fusion-lives {
+  display:flex; gap:5px;
+}
+.flife { width:9px; height:9px; border-radius:50%; background:var(--red); box-shadow:0 0 8px rgba(255,34,68,0.6); transition:all 0.3s; }
+.flife.empty { background:var(--muted); box-shadow:none; }
+
+/* Fusion timer arc */
+#ftimer-wrap {
+  position:relative; width:52px; height:52px;
+}
+#ftimer-svg { width:100%; height:100%; }
+#ftimer-track { fill:none; stroke:var(--border); stroke-width:4; }
+#ftimer-arc {
+  fill:none; stroke:var(--cyan); stroke-width:4; stroke-linecap:round;
+  stroke-dasharray:138; stroke-dashoffset:0;
+  transform-origin:26px 26px; transform:rotate(-90deg);
+  transition:stroke 0.3s;
+}
+#ftimer-ms {
+  font-family:'Share Tech Mono',monospace; font-size:8px;
+  fill:var(--text); text-anchor:middle; dominant-baseline:middle;
+}
+
+/* Fusion arena */
+#fusion-arena {
+  flex:1; width:100%; position:relative; overflow:hidden;
+}
+#fusion-arena::before {
+  content:''; position:absolute; inset:0;
+  background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(0,0,0,0.04) 3px,rgba(0,0,0,0.04) 4px);
+  pointer-events:none; z-index:0;
+}
+#fusion-idle {
+  position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
+  font-family:'Share Tech Mono',monospace; font-size:11px; letter-spacing:4px; color:var(--muted); opacity:0.4;
+  pointer-events:none;
+}
+
+/* Stimuli — positioned relative to #fusion-arena, never outside */
+.stimulus {
+  position:absolute; transform:translate(-50%,-50%); z-index:10;
+  pointer-events:none;
+  animation:stIn 0.15s cubic-bezier(0.34,1.6,0.64,1) forwards;
+}
+@keyframes stIn{from{transform:translate(-50%,-50%) scale(0.1);opacity:0}to{transform:translate(-50%,-50%) scale(1);opacity:1}}
+.stimulus.die{animation:stOut 0.18s ease-out forwards}
+@keyframes stOut{to{transform:translate(-50%,-50%) scale(1.8);opacity:0}}
+.stimulus.ok{animation:stOk 0.2s ease-out forwards}
+@keyframes stOk{0%{transform:translate(-50%,-50%) scale(1);filter:brightness(1)}50%{transform:translate(-50%,-50%) scale(1.4);filter:brightness(3)}100%{transform:translate(-50%,-50%) scale(0);opacity:0}}
+
+.s-dir {
+  width:clamp(72px,22vw,90px); height:clamp(72px,22vw,90px);
+  background:var(--panel);
+  border:1.5px solid var(--border2);
+  border-radius:8px;
+  display:flex; flex-direction:column; align-items:center; justify-content:center; gap:3px;
+  box-shadow:0 0 30px rgba(0,229,255,0.08),inset 0 1px 0 rgba(255,255,255,0.03);
+}
+.s-dir-arrow { font-size:clamp(28px,8vw,38px); color:var(--white); line-height:1; filter:drop-shadow(0 0 10px rgba(255,255,255,0.3)); }
+.s-dir-hint { font-family:'Share Tech Mono',monospace; font-size:8px; letter-spacing:1px; color:var(--muted); }
+
+.s-click {
+  width:clamp(80px,24vw,100px); height:clamp(80px,24vw,100px); border-radius:50%;
+  background:radial-gradient(circle at 38% 35%,#ffee44,var(--gold) 55%,#996600);
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  box-shadow:0 0 0 3px rgba(255,204,0,0.25),0 0 40px rgba(255,204,0,0.6),0 0 80px rgba(255,204,0,0.2),inset 0 2px 0 rgba(255,255,255,0.2);
+  animation:stIn 0.15s cubic-bezier(0.34,1.6,0.64,1) forwards,clickPulse 0.6s ease-in-out infinite 0.15s;
+}
+@keyframes clickPulse{0%,100%{box-shadow:0 0 0 3px rgba(255,204,0,0.25),0 0 40px rgba(255,204,0,0.6),0 0 80px rgba(255,204,0,0.2)}50%{box-shadow:0 0 0 6px rgba(255,204,0,0.15),0 0 60px rgba(255,204,0,0.9),0 0 120px rgba(255,204,0,0.3)}}
+.s-click-text{font-family:'Orbitron',sans-serif;font-weight:700;font-size:clamp(13px,4vw,18px);letter-spacing:2px;color:#1a0a00;line-height:1}
+.s-click-sub{font-family:'Share Tech Mono',monospace;font-size:8px;color:rgba(0,0,0,0.4);letter-spacing:1px}
+
+/* Fusion control panel */
+#fusion-panel {
+  width:100%; background:var(--bg2); border-top:1px solid var(--border);
+  padding:12px 16px 16px;
+  display:flex; align-items:center; justify-content:space-between; gap:10px;
+  flex-shrink:0;
+}
+
+/* D-PAD */
+#fdpad {
+  display:grid; grid-template-columns:repeat(3,58px); grid-template-rows:repeat(3,58px); gap:4px;
+}
+.fdp {
+  background:#121820; border:1px solid var(--border2); border-radius:6px;
+  display:flex; align-items:center; justify-content:center;
+  font-size:20px; color:var(--text); cursor:pointer;
+  box-shadow:0 3px 0 #050708,inset 0 1px 0 rgba(255,255,255,0.03);
+  transition:all 0.08s; touch-action:manipulation;
+}
+.fdp:active,.fdp.press{
+  background:#1a2230; border-color:var(--cyan); color:var(--cyan);
+  box-shadow:0 0 0 #050708,0 0 12px rgba(0,229,255,0.3);
+  transform:translateY(2px);
+}
+.fdp-empty{background:transparent;border:none;box-shadow:none;pointer-events:none}
+
+/* Click center button */
+#fclick-btn {
+  border-radius:50%; cursor:pointer; touch-action:manipulation;
+  background:radial-gradient(circle at 40% 35%,#ff4466,var(--red2) 60%,#550011);
+  border:2px solid var(--red);
+  display:flex; align-items:center; justify-content:center;
+  box-shadow:0 0 20px rgba(255,34,68,0.45),inset 0 1px 0 rgba(255,150,150,0.2);
+  animation:fpPulse 2s ease-in-out infinite; transition:all 0.12s;
+}
+@keyframes fpPulse{0%,100%{box-shadow:0 0 20px rgba(255,34,68,0.45),inset 0 1px 0 rgba(255,150,150,0.2)}50%{box-shadow:0 0 38px rgba(255,34,68,0.7),inset 0 1px 0 rgba(255,150,150,0.2)}}
+#fclick-btn:active,#fclick-btn.press{transform:scale(0.93);animation:none;box-shadow:0 0 50px rgba(255,34,68,0.9)}
+.fclick-icon{font-size:28px;filter:drop-shadow(0 0 4px rgba(255,150,150,0.4))}
+
+/* Right panel: combo + score */
+#fright {
+  flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px;
+}
+.fring-wrap{position:relative;display:flex;align-items:center;justify-content:center}
+.fring-svg{position:absolute;inset:0;width:100%;height:100%}
+#fring-track{fill:none;stroke:var(--border);stroke-width:5}
+#fring-arc{fill:none;stroke:var(--gold);stroke-width:5;stroke-linecap:round;stroke-dasharray:251;stroke-dashoffset:251;transform-origin:44px 44px;transform:rotate(-90deg);transition:stroke-dashoffset 0.3s,stroke 0.4s}
+.fring-inner{display:flex;flex-direction:column;align-items:center;z-index:1}
+.fring-num{font-family:'Orbitron',sans-serif;font-weight:700;font-size:26px;line-height:1;color:var(--white)}
+.fring-lbl{font-family:'Share Tech Mono',monospace;font-size:7px;letter-spacing:2px;color:var(--muted);margin-top:1px}
+.fscore-big{text-align:center}
+.fscore-num{font-family:'Orbitron',sans-serif;font-weight:800;font-size:36px;line-height:1;color:var(--cyan);text-shadow:0 0 25px rgba(0,229,255,0.4)}
+.fscore-lbl{font-family:'Share Tech Mono',monospace;font-size:8px;letter-spacing:3px;color:var(--muted);margin-top:2px}
+
+/* Pause button */
+#fpause-btn{position:absolute;top:10px;right:14px;background:transparent;border:none;font-size:16px;color:var(--muted);cursor:pointer;z-index:25;padding:4px}
+#fpause-btn:hover{color:var(--white)}
+
+/* ═══════════════════════════════════
+   RESULTS / DEBRIEFING SCREEN
+═══════════════════════════════════ */
+#results-screen {
+  background:var(--bg);
+  justify-content:center; padding:20px 22px;
+  overflow-y:auto;
+}
+
+.debrief-header {
+  text-align:center; margin-bottom:20px;
+}
+.debrief-code {
+  font-family:'Share Tech Mono',monospace; font-size:9px; letter-spacing:5px; color:var(--muted); margin-bottom:4px;
+}
+.debrief-title {
+  font-family:'Orbitron',sans-serif; font-weight:800;
+  font-size:clamp(20px,5vw,36px); letter-spacing:4px;
+  margin-bottom:4px;
+}
+.debrief-title.success{color:var(--green);text-shadow:0 0 30px rgba(0,255,136,0.5)}
+.debrief-title.fail{color:var(--red);text-shadow:0 0 30px rgba(255,34,68,0.5);animation:goG 0.08s step-end 4}
+@keyframes goG{0%,100%{transform:translate(0)}25%{transform:translate(-3px,1px)}75%{transform:translate(3px,-1px)}}
+
+.rank-badge {
+  font-family:'Orbitron',sans-serif; font-weight:700;
+  font-size:clamp(18px,4vw,28px); letter-spacing:3px;
+  margin-bottom:16px;
+}
+
+.result-grid {
+  display:grid; grid-template-columns:1fr 1fr;
+  gap:10px; width:min(400px,100%); margin-bottom:14px;
+}
+.rtile {
+  background:var(--panel); border:1px solid var(--border2); border-radius:4px;
+  padding:12px 14px; display:flex; flex-direction:column; align-items:center; gap:3px;
+}
+.rtile-lbl{font-family:'Share Tech Mono',monospace;font-size:8px;letter-spacing:3px;color:var(--muted);text-transform:uppercase}
+.rtile-val{font-family:'Orbitron',sans-serif;font-weight:700;font-size:26px;line-height:1}
+.rv-cyan{color:var(--cyan)}.rv-gold{color:var(--gold)}.rv-green{color:var(--green)}.rv-red{color:var(--red)}
+
+/* AI Analysis box */
+.ai-panel {
+  width:min(400px,100%); background:var(--panel);
+  border:1px solid var(--border2); border-left:3px solid var(--cyan);
+  border-radius:4px; padding:14px; margin-bottom:16px;
+}
+.ai-panel-label{font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:4px;color:var(--cyan);margin-bottom:8px}
+.ai-analysis{font-family:'Share Tech Mono',monospace;font-size:11px;line-height:1.8;color:var(--text)}
+.ai-highlight{color:var(--green)}
+.ai-warn{color:var(--gold)}
+.ai-crit{color:var(--red)}
+
+/* Buttons */
+.btn-primary{
+  font-family:'Orbitron',sans-serif;font-weight:700;font-size:14px;letter-spacing:3px;
+  background:transparent;border:2px solid var(--cyan);color:var(--cyan);
+  padding:12px 32px;border-radius:3px;cursor:pointer;
+  box-shadow:0 0 20px rgba(0,229,255,0.2);transition:all 0.15s;margin:5px;
+}
+.btn-primary:hover{background:rgba(0,229,255,0.08);box-shadow:0 0 35px rgba(0,229,255,0.4);transform:scale(1.03)}
+.btn-secondary{
+  font-family:'Share Tech Mono',monospace;font-size:12px;letter-spacing:3px;
+  background:transparent;border:1px solid var(--muted);color:var(--muted);
+  padding:10px 28px;border-radius:3px;cursor:pointer;transition:all 0.15s;margin:5px;
+}
+.btn-secondary:hover{border-color:var(--text);color:var(--text)}
+
+/* ═══════════════════════════════════
+   OVERLAYS (shared)
+═══════════════════════════════════ */
+#countdown-overlay{
+  position:fixed;inset:0;background:rgba(8,10,12,0.97);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:500;
+}
+#countdown-overlay.hidden{display:none}
+#cd-num{
+  font-family:'Orbitron',sans-serif;font-weight:900;
+  font-size:160px;line-height:1;color:var(--cyan);
+  text-shadow:0 0 80px rgba(0,229,255,0.7);
+  animation:cdIn 0.4s cubic-bezier(0.34,1.3,0.64,1);
+}
+@keyframes cdIn{from{transform:scale(2.5);opacity:0}to{transform:scale(1);opacity:1}}
+#cd-label{font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:5px;color:var(--muted);margin-top:12px}
+
+#flash-overlay{position:fixed;inset:0;pointer-events:none;z-index:800;opacity:0;transition:opacity 0.08s}
+#stress-border{position:fixed;inset:0;pointer-events:none;z-index:700;border:3px solid transparent;transition:all 0.3s}
+#stress-border.s1{border-color:rgba(255,34,68,0.25);box-shadow:inset 0 0 50px rgba(255,34,68,0.07)}
+#stress-border.s2{border-color:rgba(255,34,68,0.55);box-shadow:inset 0 0 80px rgba(255,34,68,0.15)}
+#stress-border.s3{border-color:rgba(255,34,68,0.9);box-shadow:inset 0 0 120px rgba(255,34,68,0.3);animation:sbP 0.35s ease-in-out infinite}
+@keyframes sbP{0%,100%{opacity:1}50%{opacity:0.4}}
+
+#flow-banner{
+  position:fixed;top:56px;left:50%;transform:translateX(-50%);
+  font-family:'Orbitron',sans-serif;font-weight:700;font-size:12px;letter-spacing:5px;
+  color:var(--gold);text-shadow:0 0 20px rgba(255,204,0,0.6);
+  pointer-events:none;z-index:50;opacity:0;transition:opacity 0.4s;
+}
+#flow-banner.on{opacity:1;animation:flowPulse 2s ease-in-out infinite}
+@keyframes flowPulse{0%,100%{text-shadow:0 0 20px rgba(255,204,0,0.6)}50%{text-shadow:0 0 40px rgba(255,204,0,1),0 0 80px rgba(255,204,0,0.5)}}
+
+#pause-overlay{position:fixed;inset:0;background:rgba(8,10,12,0.96);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;z-index:400}
+#pause-overlay.hidden{display:none}
+.pause-title{font-family:'Orbitron',sans-serif;font-weight:800;font-size:60px;letter-spacing:8px;color:var(--cyan)}
+
+/* Score popups */
+.spop{position:fixed;font-family:'Orbitron',sans-serif;font-weight:700;font-size:22px;letter-spacing:2px;pointer-events:none;z-index:900;transform:translate(-50%,-50%);animation:spopA 0.7s ease-out forwards}
+.spop.ok{color:var(--green);text-shadow:0 0 16px rgba(0,255,136,0.6)}
+.spop.bad{color:var(--red);text-shadow:0 0 16px rgba(255,34,68,0.6)}
+@keyframes spopA{0%{transform:translate(-50%,-50%) scale(1.4);opacity:1}100%{transform:translate(-50%,calc(-50% - 55px)) scale(0.9);opacity:0}}
+
+/* Particles */
+.ptcl{position:fixed;border-radius:50%;pointer-events:none;z-index:850;animation:ptclA var(--d) ease-out forwards}
+@keyframes ptclA{0%{transform:translate(0,0) scale(1);opacity:1}100%{transform:translate(var(--tx),var(--ty)) scale(0);opacity:0}}
+
+/* Flow vignette */
+#flow-vig{position:fixed;inset:0;pointer-events:none;z-index:5;box-shadow:inset 0 0 120px rgba(255,204,0,0.06);opacity:0;transition:opacity 1s}
+#flow-vig.on{opacity:1;animation:fvP 2.5s ease-in-out infinite}
+@keyframes fvP{0%,100%{box-shadow:inset 0 0 120px rgba(255,204,0,0.06)}50%{box-shadow:inset 0 0 180px rgba(255,204,0,0.13)}}
+
+#kb-hint{position:fixed;bottom:8px;right:12px;font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:1px;color:var(--muted);opacity:0.35;line-height:1.9;z-index:30;pointer-events:none}
+
+/* Life bonus pop */
+@keyframes lifePop{0%{transform:translate(-50%,-50%) scale(1.3);opacity:1}100%{transform:translate(-50%,calc(-50% - 45px)) scale(0.9);opacity:0}}
+
+/* New PB flash */
+.pb-flash{font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:4px;color:var(--cyan);animation:pbBlink 0.8s step-end infinite;margin-top:4px}
+@keyframes pbBlink{0%,100%{opacity:1}50%{opacity:0}}
+
+/* Grid phase states */
+.phase-ready #grid-action-btn { border-color:var(--red); color:var(--red); }
+.phase-running #grid-action-btn { display:none; }
+.phase-waiting #grid-action-btn { border-color:var(--cyan); color:var(--cyan); }
+</style>
+</head>
+<body>
+
+<div id="flash-overlay"></div>
+<div id="stress-border"></div>
+<div id="flow-banner">⚡ FLOW STATE ENGAGED ⚡</div>
+<div id="flow-vig"></div>
+
+<div id="countdown-overlay" class="hidden">
+  <div id="cd-num">3</div>
+  <div id="cd-label"></div>
+</div>
+
+<div id="pause-overlay" class="hidden">
+  <div class="pause-title">PAUSED</div>
+  <button class="btn-primary" onclick="resumeGame()">RESUME</button>
+  <button class="btn-secondary" onclick="goMenu()">MAIN MENU</button>
+</div>
+
+<!-- ═══ BOOT / MENU ═══ -->
+<div id="boot-screen" class="screen">
+  <div class="boot-header">
+    <div class="classified-tag">CLASSIFIED — PRO SERIES</div>
+    <div class="boot-title">HEMANSHU<br>REFLEX TEST</div>
+    <div class="boot-sub">PROJECT CODE: HEMANSHU-REFLEX-TEST</div>
+    <div class="developer-tag">DEVELOPER: HEMANSHU // CLASS 11 // SUPERHUMAN PROTOCOL</div>
+  </div>
+
+  <div class="discipline-grid">
+    <div class="disc-card hmi01" onclick="launchGridStart()">
+      <div class="disc-code">HMI-01 // GRID START</div>
+      <div class="disc-name">GRID START</div>
+      <div class="disc-desc">
+        10 red nodes illuminate sequentially.<br>
+        React the moment all lights extinguish.<br>
+        Adaptive level scaling via CNS leap logic.
+      </div>
+      <div class="disc-benchmark">
+        <span class="bench-amateur">AMATEUR &lt; LV.5</span>
+        <span class="bench-god">👑 GOD &gt; LV.20</span>
+      </div>
+    </div>
+    <div class="disc-card hmi02" onclick="launchFusion()">
+      <div class="disc-code">HMI-02 // KINETIC FUSION</div>
+      <div class="disc-name">KINETIC FUSION</div>
+      <div class="disc-desc">
+        Directional vs Click command vectors.<br>
+        Dual-thumb D-pad or Keyboard/Mouse.<br>
+        Exponentially decaying reaction window.
+      </div>
+      <div class="disc-benchmark">
+        <span class="bench-amateur">AMATEUR &lt; 30 PTS</span>
+        <span class="bench-god">👑 GOD &gt; 150 PTS</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="pb-row">
+    <div>GRID PB: <span id="menu-grid-pb">—</span></div>
+    <div>FUSION PB: <span id="menu-fusion-pb">—</span></div>
+  </div>
+</div>
+
+<!-- ═══ HMI-01: GRID START ═══ -->
+<div id="grid-screen" class="screen hidden">
+  <div id="grid-hud">
+    <div id="gs-level" class="g-stat">
+      <div class="g-stat-label">LEVEL</div>
+      <div class="g-stat-val" id="gs-level-val">1</div>
+    </div>
+    <div id="gs-target" class="g-stat">
+      <div class="g-stat-label">TARGET</div>
+      <div class="g-stat-val" id="gs-target-val">350ms</div>
+    </div>
+    <div id="gs-last" class="g-stat">
+      <div class="g-stat-label">LAST RT</div>
+      <div class="g-stat-val" id="gs-last-val">—</div>
+    </div>
+    <div id="gs-pb" class="g-stat">
+      <div class="g-stat-label">BEST RT</div>
+      <div class="g-stat-val" id="gs-pb-val">—</div>
+    </div>
+  </div>
+
+  <div id="grid-arena">
+    <div class="grid-instruction" id="grid-instr">PRESS START — REACT WHEN ALL NODES EXTINGUISH</div>
+    <div id="node-row"></div>
+    <div id="node-progress"></div>
+    <div id="reaction-display" style="display:none">
+      <div id="reaction-big">—</div>
+      <div id="reaction-sub">REACTION TIME</div>
+      <div id="pb-new-flash" class="pb-flash hidden">★ NEW PERSONAL BEST ★</div>
+    </div>
+    <div id="levelup-badge">LEVEL UP ↑</div>
+  </div>
+
+  <div id="grid-bottom">
+    <div id="grid-status">AWAITING INITIATION</div>
+    <div style="display:flex;gap:8px;align-items:center">
+      <button id="grid-menu-btn" class="btn-secondary" onclick="goMenu()" style="padding:8px 16px;font-size:10px">⌂ MENU</button>
+      <button id="grid-action-btn" onclick="gridAction()">▶ START</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ HMI-02: KINETIC FUSION ═══ -->
+<div id="fusion-screen" class="screen hidden">
+  <button id="fpause-btn" onclick="toggleFusionPause()">⏸</button>
+  <div id="fusion-hud">
+    <div id="fs-score" class="f-stat">
+      <div class="f-stat-label">SCORE</div>
+      <div class="f-stat-val" id="fhud-score">0</div>
+    </div>
+    <div style="display:flex;flex-direction:column;align-items:center;gap:4px">
+      <div id="fusion-lives"></div>
+      <div id="ftimer-wrap">
+        <svg id="ftimer-svg" viewBox="0 0 52 52">
+          <circle id="ftimer-track" cx="26" cy="26" r="22"/>
+          <circle id="ftimer-arc"   cx="26" cy="26" r="22"/>
+          <text id="ftimer-ms" x="26" y="26">—</text>
+        </svg>
+      </div>
+    </div>
+    <div id="fs-combo" class="f-stat">
+      <div class="f-stat-label">COMBO</div>
+      <div class="f-stat-val" id="fhud-combo">×0</div>
+    </div>
+  </div>
+
+  <div id="fusion-arena">
+    <div id="fusion-idle">SYNAPSE READY...</div>
+  </div>
+
+  <div id="fusion-panel">
+    <!-- D-PAD -->
+    <div id="fdpad">
+      <div class="fdp-empty fdp"></div>
+      <div class="fdp" id="fdp-UP"    onpointerdown="fdpDown('UP')"    onpointerup="fdpUp('UP')">↑</div>
+      <div class="fdp-empty fdp"></div>
+      <div class="fdp" id="fdp-LEFT"  onpointerdown="fdpDown('LEFT')"  onpointerup="fdpUp('LEFT')">←</div>
+      <div id="fclick-btn" style="width:58px;height:58px" onpointerdown="fclickDown()" onpointerup="fclickUp()">
+        <div class="fclick-icon">⚡</div>
+      </div>
+      <div class="fdp" id="fdp-RIGHT" onpointerdown="fdpDown('RIGHT')" onpointerup="fdpUp('RIGHT')">→</div>
+      <div class="fdp-empty fdp"></div>
+      <div class="fdp" id="fdp-DOWN"  onpointerdown="fdpDown('DOWN')"  onpointerup="fdpUp('DOWN')">↓</div>
+      <div class="fdp-empty fdp"></div>
+    </div>
+
+    <!-- Right panel -->
+    <div id="fright">
+      <div class="fring-wrap" style="width:88px;height:88px">
+        <svg class="fring-svg" viewBox="0 0 88 88">
+          <circle id="fring-track" cx="44" cy="44" r="40"/>
+          <circle id="fring-arc"   cx="44" cy="44" r="40"/>
+        </svg>
+        <div class="fring-inner">
+          <div class="fring-num" id="fring-num">0</div>
+          <div class="fring-lbl">COMBO</div>
+        </div>
+      </div>
+      <div class="fscore-big">
+        <div class="fscore-num" id="fscore-big">0</div>
+        <div class="fscore-lbl">NEURAL SCORE</div>
+      </div>
+    </div>
+  </div>
+
+  <div id="kb-hint">ESC: Pause&nbsp;&nbsp;WASD/↑↓←→: Direction&nbsp;&nbsp;Space/Click: TRIGGER</div>
+</div>
+
+<!-- ═══ RESULTS ═══ -->
+<div id="results-screen" class="screen hidden">
+  <div class="debrief-header">
+    <div class="debrief-code" id="res-code">DEBRIEF // HMI-01</div>
+    <div class="debrief-title" id="res-title">SESSION COMPLETE</div>
+    <div class="rank-badge" id="res-rank"></div>
+  </div>
+  <div class="result-grid" id="res-grid"></div>
+  <div class="ai-panel">
+    <div class="ai-panel-label">⚙ TELEMETRY ANALYSIS — SYSTEM GEMINI</div>
+    <div class="ai-analysis" id="ai-text">Analyzing CNS data...</div>
+  </div>
+  <div>
+    <button class="btn-primary" id="res-retry-btn">↺ RETRY</button>
+    <button class="btn-secondary" onclick="goMenu()">⌂ MAIN MENU</button>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════
+// AUDIO
+// ═══════════════════════════════════
+let _ac;
+const ac=()=>{if(!_ac)_ac=new(window.AudioContext||window.webkitAudioContext)();if(_ac.state==='suspended')_ac.resume();return _ac;};
+const tone=(f,t,d,v=0.22,delay=0)=>{try{const o=ac().createOscillator(),g=ac().createGain();o.connect(g);g.connect(ac().destination);o.type=t;o.frequency.value=f;const s=ac().currentTime+delay;g.gain.setValueAtTime(v,s);g.gain.exponentialRampToValueAtTime(0.001,s+d);o.start(s);o.stop(s+d);}catch(e){}};
+const sndOk   = ()=>{ tone(523,'sine',0.09); tone(784,'sine',0.09,0.18,0.07); };
+const sndBad  = ()=>{ tone(140,'sawtooth',0.18,0.38); tone(100,'sawtooth',0.2,0.28,0.09); };
+const sndFlow = ()=>{ for(let i=0;i<5;i++)tone(220*(i+1),'sine',0.12,0.12,i*0.055); };
+const sndCD   = (n)=> tone(n===0?900:440,'square',0.08,0.18);
+const sndTO   = ()=> tone(190,'triangle',0.22,0.28);
+const sndNode = (i)=> tone(200+i*30,'sine',0.06,0.15);
+const sndLights=()=>{ tone(880,'sine',0.08,0.3); tone(1100,'sine',0.08,0.3,0.08); };
+const sndLvlUp=()=>{ [440,554,659,880].forEach((f,i)=>tone(f,'sine',0.12,0.2,i*0.08)); };
+const sndCombo=()=>tone(440,'sine',0.06,0.14);
+
+// ═══════════════════════════════════
+// PERSISTENCE
+// ═══════════════════════════════════
+const PB = {
+  gridLevel: +localStorage.getItem('hrt_gl')||0,
+  gridRT:    +localStorage.getItem('hrt_gr')||0,
+  fusionScore:+localStorage.getItem('hrt_fs')||0,
+  fusionCombo:+localStorage.getItem('hrt_fc')||0,
+  save(){
+    localStorage.setItem('hrt_gl',this.gridLevel);
+    localStorage.setItem('hrt_gr',this.gridRT);
+    localStorage.setItem('hrt_fs',this.fusionScore);
+    localStorage.setItem('hrt_fc',this.fusionCombo);
+  }
+};
+
+// ═══════════════════════════════════
+// SCREEN UTILS
+// ═══════════════════════════════════
+function showScr(id){ document.querySelectorAll('.screen').forEach(s=>s.classList.add('hidden')); document.getElementById(id).classList.remove('hidden'); }
+function flash(color){ const f=document.getElementById('flash-overlay'); f.style.background=color; f.style.opacity=1; setTimeout(()=>f.style.opacity=0,110); }
+function shakeBody(hard=false){
+  const d=hard?'8px':'4px', t=hard?'0.28s':'0.18s';
+  const id='sk'+Date.now(), st=document.createElement('style');
+  st.id=id; st.textContent=`@keyframes _s{0%,100%{transform:translate(0)}20%{transform:translate(-${d},3px)}40%{transform:translate(${d},-3px)}60%{transform:translate(-${d},-3px)}80%{transform:translate(${d},3px)}}`;
+  document.head.appendChild(st); document.body.style.animation=`_s ${t} ease-in-out`;
+  setTimeout(()=>{ document.body.style.animation=''; document.getElementById(id)?.remove(); },300);
+}
+function pop(text,x,y,cls){ const el=document.createElement('div'); el.className='spop '+cls; el.style.left=x+'px'; el.style.top=y+'px'; el.textContent=text; document.body.appendChild(el); setTimeout(()=>el.remove(),750); }
+function particles(x,y,color){ for(let i=0;i<14;i++){ const p=document.createElement('div'); const a=(i/14)*Math.PI*2; const d=30+Math.random()*70; const sz=2+Math.random()*5; p.className='ptcl'; p.style.cssText=`left:${x}px;top:${y}px;width:${sz}px;height:${sz}px;background:${color};--tx:${Math.cos(a)*d}px;--ty:${Math.sin(a)*d}px;--d:${0.35+Math.random()*0.45}s;box-shadow:0 0 6px ${color}`; document.body.appendChild(p); setTimeout(()=>p.remove(),800); } }
+function countdown(label, cb){ const el=document.getElementById('countdown-overlay'), num=document.getElementById('cd-num'); document.getElementById('cd-label').textContent=label; el.classList.remove('hidden'); let n=3; function tick(){ num.style.animation='none'; num.offsetHeight; num.style.animation='cdIn 0.4s cubic-bezier(0.34,1.3,0.64,1)'; num.style.color=n===0?'var(--green)':'var(--cyan)'; num.textContent=n===0?'GO!':n; sndCD(n); n--; if(n>=-1)setTimeout(tick,n===-1?420:580); else{ el.classList.add('hidden'); cb(); } } tick(); }
+function updateMenuPBs(){ document.getElementById('menu-grid-pb').textContent=PB.gridLevel?`LV.${PB.gridLevel}`:'—'; document.getElementById('menu-fusion-pb').textContent=PB.fusionScore||'—'; }
+
+// ═══════════════════════════════════
+// RANK LOGIC
+// ═══════════════════════════════════
+function gridRank(level){ if(level>=20)return{name:'👑 GOD MODE — HEMANSHU',color:'var(--gold)'}; if(level>=15)return{name:'💎 ELITE SYNAPSE',color:'#b9f2ff'}; if(level>=10)return{name:'🥇 REFLEX MASTER',color:'var(--gold)'}; if(level>=5)return{name:'🥈 ADVANCED CNS',color:'#c0c0c0'}; return{name:'🥉 AMATEUR',color:'#cd7f32'}; }
+function fusionRank(score){ if(score>=150)return{name:'👑 GOD MODE — HEMANSHU',color:'var(--gold)'}; if(score>=100)return{name:'💎 APEX NEURAL',color:'#b9f2ff'}; if(score>=60)return{name:'🥇 KINETIC MASTER',color:'var(--gold)'}; if(score>=30)return{name:'🥈 CALIBRATED',color:'#c0c0c0'}; return{name:'🥉 AMATEUR',color:'#cd7f32'}; }
+
+// ═══════════════════════════════════
+// AI ANALYSIS (local generation)
+// ═══════════════════════════════════
+function aiAnalyzeGrid(level, rt, target){
+  const delta = rt - target;
+  const acc = Math.round((target/rt)*100);
+  let lines = [];
+  lines.push(`<span class="ai-highlight">► DISCIPLINE: HMI-01 // GRID START</span>`);
+  lines.push(`► ACHIEVED LEVEL: <span class="${level>=20?'ai-highlight':level>=10?'ai-warn':'ai-crit'}">${level}</span>`);
+  lines.push(`► BEST REACTION TIME: <span class="ai-highlight">${rt}ms</span> | TARGET: ${target}ms`);
+  lines.push(`► DELTA: <span class="${delta<0?'ai-highlight':delta<50?'ai-warn':'ai-crit'}">${delta>=0?'+':''}${Math.round(delta)}ms</span> | ACCURACY: <span class="ai-highlight">${acc}%</span>`);
+  if(level>=20) lines.push(`► STATUS: <span class="ai-highlight">CNS CALIBRATION COMPLETE. GOD-TIER REFLEXES CONFIRMED.</span>`);
+  else if(level>=10) lines.push(`► STATUS: <span class="ai-warn">STRONG NEURAL PATHWAY. CONTINUE TRAINING TO REACH GOD MODE.</span>`);
+  else lines.push(`► STATUS: <span class="ai-crit">CNS REQUIRES FURTHER CALIBRATION. TARGET LEVEL 20.</span>`);
+  lines.push(`► RECOMMENDATION: ${level<5?'Increase sessions to 3x daily.':level<15?'Focus on anticipating the lights-out trigger.':'Maintain current protocol. You are elite.'}`);
+  return lines.join('<br>');
+}
+function aiAnalyzeFusion(score, maxCombo, acc, avgRt){
+  let lines = [];
+  lines.push(`<span class="ai-highlight">► DISCIPLINE: HMI-02 // KINETIC FUSION</span>`);
+  lines.push(`► NEURAL SCORE: <span class="${score>=150?'ai-highlight':score>=60?'ai-warn':'ai-crit'}">${score} PTS</span> | BEST COMBO: <span class="ai-highlight">×${maxCombo}</span>`);
+  lines.push(`► CLASSIFICATION ACCURACY: <span class="${acc>=85?'ai-highlight':acc>=70?'ai-warn':'ai-crit'}">${acc}%</span>`);
+  lines.push(`► AVG REACTION TIME: <span class="ai-highlight">${avgRt}ms</span>`);
+  if(score>=150) lines.push(`► STATUS: <span class="ai-highlight">DUAL-THUMB SYNCHRONIZATION AT SUPERHUMAN THRESHOLD.</span>`);
+  else if(score>=60) lines.push(`► STATUS: <span class="ai-warn">MOTOR CLASSIFICATION ABOVE AVERAGE. PUSH FOR GOD MODE (150+).</span>`);
+  else lines.push(`► STATUS: <span class="ai-crit">INPUT MISCLASSIFICATION DETECTED. REVIEW CONFLICT RULE PROTOCOL.</span>`);
+  lines.push(`► RECOMMENDATION: ${score<30?'Practice direction vs click separation. Reduce conflict errors.':score<100?'Increase session frequency. Focus on combo streaks.':'Maintain elite protocol. Target 200+ for Fusion God rank.'}`);
+  return lines.join('<br>');
+}
+
+// ═══════════════════════════════════
+// HMI-01: GRID START
+// ═══════════════════════════════════
+const GS = {
+  level: 1, phase: 'idle',
+  nodeIdx: 0, reactionStart: 0, earlyPress: false,
+  allLitTO: null, nodeTOs: [],
+  bestRT: null, lastRT: null,
+  attempts: 0,
+};
+
+function gridTargetMS(level){ return Math.round(350 * Math.pow(0.92, level-1)); }
+
+function launchGridStart(){
+  ac();
+  GS.level = Math.max(1, PB.gridLevel||1);
+  GS.phase = 'idle'; GS.bestRT = PB.gridRT||null; GS.lastRT = null; GS.attempts = 0;
+  buildNodes(); updateGridHUD();
+  document.getElementById('reaction-display').style.display='none';
+  document.getElementById('levelup-badge').style.display='none';
+  document.getElementById('grid-instr').style.display='';
+  document.getElementById('grid-instr').textContent='PRESS START — REACT THE MOMENT ALL NODES EXTINGUISH';
+  document.getElementById('grid-action-btn').textContent='▶ START';
+  document.getElementById('grid-action-btn').style.display='';
+  document.getElementById('grid-status').textContent='AWAITING INITIATION';
+  showScr('grid-screen');
+}
+
+function buildNodes(){
+  const row=document.getElementById('node-row');
+  row.innerHTML='';
+  const prog=document.getElementById('node-progress');
+  prog.innerHTML='';
+  for(let i=0;i<10;i++){
+    const n=document.createElement('div'); n.className='node'; n.id='node'+i; row.appendChild(n);
+    const d=document.createElement('div'); d.className='np-dot'; d.id='np'+i; prog.appendChild(d);
+  }
+  // Click listener on arena area for early/reaction press
+  document.getElementById('grid-arena').onclick=null;
+}
+
+function updateGridHUD(){
+  const target=gridTargetMS(GS.level);
+  document.getElementById('gs-level-val').textContent=GS.level;
+  document.getElementById('gs-target-val').textContent=target+'ms';
+  document.getElementById('gs-pb-val').textContent=GS.bestRT?GS.bestRT+'ms':'—';
+  document.getElementById('gs-last-val').textContent=GS.lastRT?GS.lastRT+'ms':'—';
+}
+
+function gridAction(){
+  if(GS.phase==='idle'||GS.phase==='done'){ startGridRound(); }
+}
+
+function startGridRound(){
+  ac();
+  GS.phase='lighting';
+  GS.earlyPress=false;
+  GS.nodeIdx=0;
+  document.getElementById('grid-instr').style.display='';
+  document.getElementById('grid-instr').textContent='WATCH THE NODES...';
+  document.getElementById('reaction-display').style.display='none';
+  document.getElementById('levelup-badge').style.display='none';
+  document.getElementById('grid-action-btn').style.display='none';
+  document.getElementById('grid-status').textContent='NODES ILLUMINATING...';
+  document.getElementById('pb-new-flash').classList.add('hidden');
+  // Reset nodes
+  for(let i=0;i<10;i++){
+    const n=document.getElementById('node'+i); n.className='node';
+    document.getElementById('np'+i).className='np-dot';
+  }
+
+  // Light up nodes sequentially
+  const delay=200+GS.level*2; // slight speed increase per level
+  let t=0;
+  GS.nodeTOs=[];
+  for(let i=0;i<10;i++){
+    const ii=i;
+    GS.nodeTOs.push(setTimeout(()=>{
+      document.getElementById('node'+ii).classList.add('lit');
+      document.getElementById('np'+ii).classList.add('active');
+      sndNode(ii);
+    }, t));
+    t+=delay;
+  }
+  // All lit: wait brief moment, then lights out
+  const litDur = Math.max(400,900-GS.level*20);
+  GS.allLitTO=setTimeout(()=>{
+    lightsOut();
+  }, t+litDur);
+
+  // Listen for early press (penalty)
+  document.getElementById('grid-arena').onclick=(e)=>{
+    if(GS.phase==='lighting'){
+      earlyPressGrid();
+    } else if(GS.phase==='reacting'){
+      recordReactionGrid();
+    }
+  };
+  document.onkeydown_grid=(e)=>{ if(e.code==='Space'){ e.preventDefault(); if(GS.phase==='lighting')earlyPressGrid(); else if(GS.phase==='reacting')recordReactionGrid(); } };
+}
+
+document.addEventListener('keydown',e=>{
+  if(e.code==='Space'){ e.preventDefault(); if(GS.phase==='lighting')earlyPressGrid(); else if(GS.phase==='reacting')recordReactionGrid(); }
+});
+
+function lightsOut(){
+  // Extinguish all
+  for(let i=0;i<10;i++){
+    document.getElementById('node'+i).classList.remove('lit');
+    document.getElementById('np'+i).className='np-dot done';
+  }
+  sndLights();
+  GS.phase='reacting';
+  GS.reactionStart=performance.now();
+  document.getElementById('grid-instr').textContent='▶ REACT NOW ◀';
+  document.getElementById('grid-instr').style.color='var(--green)';
+  document.getElementById('grid-status').textContent='REACT!';
+
+  // Timeout if too slow (3 seconds max)
+  GS.allLitTO=setTimeout(()=>{
+    if(GS.phase==='reacting'){ tooSlowGrid(); }
+  },3000);
+}
+
+function earlyPressGrid(){
+  GS.phase='done';
+  clearAllGridTOs();
+  flash('rgba(255,34,68,0.25)'); shakeBody(true);
+  sndBad();
+  // Reset nodes
+  for(let i=0;i<10;i++){
+    document.getElementById('node'+i).className='node';
+    document.getElementById('np'+i).className='np-dot';
+  }
+  document.getElementById('grid-instr').textContent='EARLY PRESS! WAIT FOR LIGHTS OUT!';
+  document.getElementById('grid-instr').style.color='var(--red)';
+  document.getElementById('grid-status').textContent='FAULT — PREMATURE TRIGGER';
+  document.getElementById('grid-action-btn').textContent='↺ RETRY';
+  document.getElementById('grid-action-btn').style.display='';
+}
+
+function tooSlowGrid(){
+  GS.phase='done';
+  clearAllGridTOs();
+  sndBad();
+  document.getElementById('grid-instr').textContent='TOO SLOW — NO REACTION REGISTERED';
+  document.getElementById('grid-instr').style.color='var(--red)';
+  document.getElementById('grid-status').textContent='TIMEOUT';
+  document.getElementById('grid-action-btn').textContent='↺ RETRY';
+  document.getElementById('grid-action-btn').style.display='';
+}
+
+function recordReactionGrid(){
+  if(GS.phase!=='reacting')return;
+  clearTimeout(GS.allLitTO);
+  const rt=Math.round(performance.now()-GS.reactionStart);
+  GS.phase='done'; GS.lastRT=rt; GS.attempts++;
+
+  // PB?
+  const isNewBest = !GS.bestRT || rt<GS.bestRT;
+  if(isNewBest){ GS.bestRT=rt; PB.gridRT=rt; }
+
+  // Level check: target for current level
+  const target=gridTargetMS(GS.level);
+  const beat=rt<=target;
+
+  // Leap logic: while reaction beats next level's target, increment
+  let oldLevel=GS.level;
+  if(beat){
+    while(GS.level<99 && rt<=gridTargetMS(GS.level+1)){
+      GS.level++;
+    }
+    if(GS.level<=99) GS.level=Math.max(GS.level, oldLevel+(beat?1:0));
+  }
+  if(GS.level>PB.gridLevel){ PB.gridLevel=GS.level; }
+  PB.save();
+
+  // Animate reaction display
+  flash(beat?'rgba(0,255,136,0.1)':'rgba(255,204,0,0.08)');
+  shakeBody(false);
+  if(beat) sndLvlUp(); else sndOk();
+  const cx=window.innerWidth/2;
+  particles(cx, window.innerHeight*0.5, beat?'var(--green)':'var(--cyan)');
+
+  document.getElementById('reaction-display').style.display='';
+  document.getElementById('reaction-big').textContent=rt+'ms';
+  document.getElementById('reaction-big').style.animation='none';
+  document.getElementById('reaction-big').offsetHeight;
+  document.getElementById('reaction-big').style.animation='reactionPop 0.3s cubic-bezier(0.34,1.56,0.64,1)';
+  document.getElementById('reaction-big').style.color=beat?'var(--green)':rt<target*1.2?'var(--gold)':'var(--red)';
+  document.getElementById('reaction-sub').textContent=`TARGET ${target}ms // ${beat?'BEAT! ✓':'MISSED ✗'} // DELTA ${rt>=target?'+':''}${rt-target}ms`;
+  document.getElementById('pb-new-flash').classList.toggle('hidden',!isNewBest);
+  document.getElementById('grid-instr').textContent='';
+
+  if(beat && GS.level>oldLevel){
+    const badge=document.getElementById('levelup-badge');
+    badge.style.display='';
+    badge.textContent=`LEVEL UP ↑ → LV.${GS.level}`;
+    if(GS.level-oldLevel>1) badge.textContent=`LEAP! +${GS.level-oldLevel} LEVELS → LV.${GS.level}`;
+    setTimeout(()=>badge.style.display='none',2500);
+  }
+
+  updateGridHUD();
+  document.getElementById('grid-status').textContent=beat?`✓ LEVEL ${GS.level} — SYNAPSE CALIBRATED`:'BELOW TARGET — RECALIBRATE';
+  document.getElementById('grid-action-btn').textContent='↺ NEXT ROUND';
+  document.getElementById('grid-action-btn').style.display='';
+  document.getElementById('grid-instr').style.color='';
+}
+
+function clearAllGridTOs(){ GS.nodeTOs.forEach(t=>clearTimeout(t)); clearTimeout(GS.allLitTO); }
+
+// Grid → show results
+function showGridResults(){
+  const target=gridTargetMS(GS.level);
+  const rnk=gridRank(GS.level);
+  document.getElementById('res-code').textContent='DEBRIEF // HMI-01 // GRID START';
+  const title=document.getElementById('res-title');
+  title.textContent=GS.bestRT<=target?'TARGET ACHIEVED':'SESSION COMPLETE';
+  title.className='debrief-title '+(GS.bestRT<=target?'success':'');
+  document.getElementById('res-rank').textContent=rnk.name;
+  document.getElementById('res-rank').style.color=rnk.color;
+  document.getElementById('res-grid').innerHTML=`
+    <div class="rtile"><div class="rtile-lbl">Level Reached</div><div class="rtile-val rv-red">${GS.level}</div></div>
+    <div class="rtile"><div class="rtile-lbl">Best RT</div><div class="rtile-val rv-green">${GS.bestRT||'—'}ms</div></div>
+    <div class="rtile"><div class="rtile-lbl">Target RT</div><div class="rtile-val rv-gold">${target}ms</div></div>
+    <div class="rtile"><div class="rtile-lbl">Attempts</div><div class="rtile-val rv-cyan">${GS.attempts}</div></div>
+  `;
+  document.getElementById('ai-text').innerHTML=aiAnalyzeGrid(GS.level,GS.bestRT||999,target);
+  document.getElementById('res-retry-btn').onclick=launchGridStart;
+  showScr('results-screen');
+}
+
+// ═══════════════════════════════════
+// HMI-02: KINETIC FUSION
+// ═══════════════════════════════════
+const F={
+  score:0,lives:3,maxLives:5,combo:0,maxCombo:0,
+  total:0,correct:0,rts:[],dirOk:0,dirTot:0,clkOk:0,clkTot:0,
+  flow:false,paused:false,running:false,
+  stims:[],timerStart:0,timerDur:1200,timerRAF:null,spawnTO:null,
+};
+const DIRS=['UP','DOWN','LEFT','RIGHT'];
+const SYMS={UP:'↑',DOWN:'↓',LEFT:'←',RIGHT:'→'};
+const DHINTS={UP:'W/↑',DOWN:'S/↓',LEFT:'A/←',RIGHT:'D/→'};
+
+function fTimerDur(s){ return Math.max(350,1200-s*15); }
+
+function launchFusion(){
+  ac();
+  Object.assign(F,{score:0,lives:3,maxLives:5,combo:0,maxCombo:0,total:0,correct:0,rts:[],dirOk:0,dirTot:0,clkOk:0,clkTot:0,flow:false,paused:false,running:false,stims:[]});
+  clearFStims(); clearTimeout(F.spawnTO); cancelAnimationFrame(F.timerRAF);
+  document.getElementById('flow-banner').classList.remove('on');
+  document.getElementById('flow-vig').classList.remove('on');
+  document.getElementById('stress-border').className='';
+  showScr('fusion-screen');
+  buildFLives(); fUpdHUD();
+  setFStrip(1);
+  countdown('HMI-02 // KINETIC FUSION',()=>{ F.running=true; fSpawnNext(); });
+}
+
+function buildFLives(){
+  const el=document.getElementById('fusion-lives'); el.innerHTML='';
+  for(let i=0;i<F.maxLives;i++){
+    const d=document.createElement('div'); d.className='flife'+(i>=F.lives?' empty':''); d.id='fl'+i; el.appendChild(d);
+  }
+}
+function renderFLives(){ for(let i=0;i<F.maxLives;i++){ const d=document.getElementById('fl'+i); if(d)d.className='flife'+(i>=F.lives?' empty':''); } }
+
+function fUpdHUD(){
+  document.getElementById('fhud-score').textContent=F.score;
+  document.getElementById('fhud-combo').textContent='×'+F.combo;
+  document.getElementById('fscore-big').textContent=F.score;
+  document.getElementById('fring-num').textContent=F.combo;
+  const pct=Math.min(1,F.combo/20);
+  document.getElementById('fring-arc').style.strokeDashoffset=251*(1-pct);
+  document.getElementById('fring-arc').style.stroke=F.flow?'var(--gold)':pct>0.5?'var(--gold)':'var(--text)';
+  if(F.rts.length>0) document.getElementById('ftimer-ms').textContent=Math.round(F.rts[F.rts.length-1])+'';
+}
+
+// Timer arc
+function setFStrip(frac){
+  const arc=document.getElementById('ftimer-arc');
+  arc.style.strokeDashoffset=138*(1-frac);
+  arc.style.stroke=frac>0.5?'var(--cyan)':frac>0.25?'var(--gold)':'var(--red)';
+}
+function setFStress(frac){
+  const sb=document.getElementById('stress-border');
+  sb.className=frac<0.2?'s3':frac<0.4?'s2':frac<0.65?'s1':'';
+}
+
+function fSpawnNext(){ if(!F.running||F.paused)return; clearTimeout(F.spawnTO); F.spawnTO=setTimeout(()=>{ if(!F.running||F.paused)return; fSpawnOne(); },80); }
+
+// Returns position as % of arena dimensions, keeping stimulus fully inside
+function fRPos(stimW=110, stimH=110){
+  const arena=document.getElementById('fusion-arena');
+  const W=arena.offsetWidth;
+  const H=arena.offsetHeight;
+  // margin = half the stimulus size + a small buffer, clamped so range is valid
+  const mX=Math.max(stimW/2+4, Math.min(stimW/2+4, W*0.5-4));
+  const mY=Math.max(stimH/2+4, Math.min(stimH/2+4, H*0.5-4));
+  const rangeX=W-mX*2;
+  const rangeY=H-mY*2;
+  return {
+    x: mX + (rangeX>0 ? Math.random()*rangeX : 0),
+    y: mY + (rangeY>0 ? Math.random()*rangeY : 0),
+  };
+}
+
+function fSpawnOne(){
+  clearFStims();
+  const type=Math.random()<0.38?'click':'dir';
+  const dir=DIRS[Math.floor(Math.random()*4)];
+  // Compute actual rendered size (matches CSS clamp values)
+  const vw=window.innerWidth;
+  const sz = type==='click'
+    ? Math.min(Math.max(80, vw*0.24), 100)   // clamp(80,24vw,100)
+    : Math.min(Math.max(72, vw*0.22), 90);    // clamp(72,22vw,90)
+  const pos=fRPos(sz, sz);
+  const el=fMkStim(type,dir);
+  el.style.left=pos.x+'px'; el.style.top=pos.y+'px';
+  document.getElementById('fusion-arena').appendChild(el);
+  document.getElementById('fusion-idle').style.display='none';
+  F.stims=[{el,type,dir,t:performance.now()}];
+  fStartTimer();
+}
+
+function fMkStim(type,dir){
+  const w=document.createElement('div'); w.className='stimulus';
+  if(type==='click') w.innerHTML=`<div class="s-click"><div class="s-click-text">CLICK</div><div class="s-click-sub">TRIGGER</div></div>`;
+  else w.innerHTML=`<div class="s-dir"><div class="s-dir-arrow">${SYMS[dir]}</div><div class="s-dir-hint">${DHINTS[dir]}</div></div>`;
+  return w;
+}
+
+function fStartTimer(){
+  cancelAnimationFrame(F.timerRAF);
+  F.timerStart=performance.now();
+  F.timerDur=fTimerDur(F.score);
+  fAnimTimer();
+}
+function fAnimTimer(){
+  if(!F.running||F.paused)return;
+  const rem=F.timerDur-(performance.now()-F.timerStart);
+  const frac=Math.max(0,rem/F.timerDur);
+  setFStrip(frac); setFStress(frac);
+  if(rem<=0){ fOnTO(); return; }
+  F.timerRAF=requestAnimationFrame(fAnimTimer);
+}
+function fOnTO(){ sndTO(); fLoseLife(); flash('rgba(255,34,68,0.2)'); pop('MISS',window.innerWidth/2,window.innerHeight*0.45,'bad'); clearFStims(); if(F.running)fSpawnNext(); }
+
+function fDoOk(stim,cx,cy){
+  const rt=performance.now()-stim.t; F.rts.push(rt);
+  F.correct++; F.score++; F.combo++; if(F.combo>F.maxCombo)F.maxCombo=F.combo;
+  cancelAnimationFrame(F.timerRAF); setFStrip(1);
+  // Convert arena-relative pos to page coords for popup/particles
+  const arena=document.getElementById('fusion-arena').getBoundingClientRect();
+  const px=cx!==undefined ? cx : arena.left+parseFloat(stim.el.style.left);
+  const py=cy!==undefined ? cy : arena.top+parseFloat(stim.el.style.top);
+  sndOk(); pop('+'+(1+Math.floor(F.combo/10))+(rt<230?'⚡':''),px,py,'ok');
+  particles(px,py,stim.type==='click'?'#ffcc00':'#00e5ff');
+  shakeBody(); flash('rgba(0,255,136,0.04)');
+  stim.el.classList.add('ok'); setTimeout(()=>stim.el.remove(),220);
+  F.stims=F.stims.filter(s=>s!==stim);
+  fLifeBonus(); fUpdFlow(); fUpdHUD(); renderFLives(); fSpawnNext();
+}
+function fDoBad(stim,cx,cy){
+  cancelAnimationFrame(F.timerRAF);
+  const arena=document.getElementById('fusion-arena').getBoundingClientRect();
+  const px=cx!==undefined ? cx : arena.left+parseFloat(stim.el.style.left);
+  const py=cy!==undefined ? cy : arena.top+parseFloat(stim.el.style.top);
+  F.combo=0; sndBad(); flash('rgba(255,34,68,0.22)'); pop('✕ WRONG',px,py,'bad'); shakeBody(true);
+  F.flow=false; document.getElementById('flow-banner').classList.remove('on'); document.getElementById('flow-vig').classList.remove('on');
+  stim.el.classList.add('die'); setTimeout(()=>stim.el.remove(),200);
+  F.stims=F.stims.filter(s=>s!==stim);
+  fLoseLife(); fUpdHUD(); renderFLives(); fSpawnNext();
+}
+function fLoseLife(){ F.lives--; renderFLives(); if(F.lives<=0){ F.running=false; setTimeout(fEndGame,260); } }
+function fLifeBonus(){ if(F.score>0&&F.score%20===0&&F.lives<F.maxLives){ F.lives=Math.min(F.maxLives,F.lives+1); renderFLives(); const el=document.createElement('div'); el.style.cssText=`position:fixed;left:50%;top:42%;font-family:'Orbitron',sans-serif;font-weight:700;font-size:20px;letter-spacing:2px;color:var(--red);pointer-events:none;z-index:900;transform:translate(-50%,-50%);animation:lifePop 0.9s ease-out forwards`; el.textContent='+1 ❤'; document.body.appendChild(el); setTimeout(()=>el.remove(),900); } }
+function fUpdFlow(){ const was=F.flow; F.flow=F.combo>=10; if(F.flow&&!was){ sndFlow(); document.getElementById('flow-banner').classList.add('on'); document.getElementById('flow-vig').classList.add('on'); } else if(!F.flow){ document.getElementById('flow-banner').classList.remove('on'); document.getElementById('flow-vig').classList.remove('on'); } if(F.combo>0&&F.combo%5===0&&!F.flow)sndCombo(); }
+
+function clearFStims(){ F.stims.forEach(s=>{ s.el.classList.add('die'); setTimeout(()=>s.el.remove(),200); }); F.stims=[]; cancelAnimationFrame(F.timerRAF); setFStrip(1); const idle=document.getElementById('fusion-idle'); if(idle)idle.style.display=''; }
+
+function fEndGame(){
+  F.running=false; clearFStims(); cancelAnimationFrame(F.timerRAF); clearTimeout(F.spawnTO);
+  document.getElementById('flow-banner').classList.remove('on');
+  document.getElementById('flow-vig').classList.remove('on');
+  document.getElementById('stress-border').className='';
+  if(F.score>PB.fusionScore)PB.fusionScore=F.score;
+  if(F.maxCombo>PB.fusionCombo)PB.fusionCombo=F.maxCombo;
+  PB.save();
+
+  const acc=F.total>0?Math.round(F.correct/F.total*100):0;
+  const avgRt=F.rts.length>0?Math.round(F.rts.reduce((a,b)=>a+b,0)/F.rts.length):0;
+  const rnk=fusionRank(F.score);
+
+  document.getElementById('res-code').textContent='DEBRIEF // HMI-02 // KINETIC FUSION';
+  const title=document.getElementById('res-title');
+  title.textContent='GAME OVER';
+  title.className='debrief-title fail';
+  document.getElementById('res-rank').textContent=rnk.name;
+  document.getElementById('res-rank').style.color=rnk.color;
+  document.getElementById('res-grid').innerHTML=`
+    <div class="rtile"><div class="rtile-lbl">Neural Score</div><div class="rtile-val rv-cyan">${F.score}</div></div>
+    <div class="rtile"><div class="rtile-lbl">Best Combo</div><div class="rtile-val rv-gold">×${F.maxCombo}</div></div>
+    <div class="rtile"><div class="rtile-lbl">Accuracy</div><div class="rtile-val rv-green">${acc}%</div></div>
+    <div class="rtile"><div class="rtile-lbl">Avg React</div><div class="rtile-val rv-red">${avgRt}ms</div></div>
+  `;
+  document.getElementById('ai-text').innerHTML=aiAnalyzeFusion(F.score,F.maxCombo,acc,avgRt);
+  document.getElementById('res-retry-btn').onclick=launchFusion;
+  showScr('results-screen');
+}
+
+// Fusion: keyboard + mouse
+document.addEventListener('keydown',e=>{
+  if(document.getElementById('fusion-screen').classList.contains('hidden'))return;
+  if(e.key==='Escape'){ toggleFusionPause(); return; }
+  if(F.paused)return;
+  ac();
+  const map={'ArrowUp':'UP','w':'UP','W':'UP','ArrowDown':'DOWN','s':'DOWN','S':'DOWN','ArrowLeft':'LEFT','a':'LEFT','A':'LEFT','ArrowRight':'RIGHT','d':'RIGHT','D':'RIGHT'};
+  if(map[e.key]) fHandleDir(map[e.key]);
+  else if(e.key===' '){ e.preventDefault(); fHandleClick(); }
+});
+document.addEventListener('mousedown',e=>{
+  if(document.getElementById('fusion-screen').classList.contains('hidden'))return;
+  if(!F.running||F.paused)return;
+  if(e.target.closest('#fdpad')||e.target.closest('#fpause-btn'))return;
+  ac(); fHandleClick(e.clientX,e.clientY);
+});
+document.addEventListener('touchstart',e=>{
+  if(document.getElementById('fusion-screen').classList.contains('hidden'))return;
+  if(!F.running||F.paused)return;
+  if(e.target.closest('#fdpad'))return;
+  ac();
+  const t=e.touches[0];
+  const a=fArena();
+  if(t.clientY>=a.top&&t.clientY<=a.bottom){ fHandleClick(t.clientX,t.clientY); e.preventDefault(); }
+},{passive:false});
+
+function fdpDown(dir){ ac(); document.getElementById('fdp-'+dir)?.classList.add('press'); if(F.running&&!F.paused)fHandleDir(dir); }
+function fdpUp(dir){ document.getElementById('fdp-'+dir)?.classList.remove('press'); }
+function fclickDown(){ ac(); document.getElementById('fclick-btn').classList.add('press'); if(F.running&&!F.paused)fHandleClick(); }
+function fclickUp(){ setTimeout(()=>document.getElementById('fclick-btn').classList.remove('press'),140); }
+
+function fHandleDir(dir){
+  const stim=F.stims[0]; if(!stim)return; F.total++;
+  if(stim.type==='dir'&&stim.dir===dir){ F.dirOk++; F.dirTot++; fDoOk(stim); }
+  else if(stim.type==='click'){ F.dirTot++; fDoBad(stim); }
+  else{ F.dirTot++; fDoBad(stim); }
+}
+function fHandleClick(cx,cy){
+  const stim=F.stims[0]; if(!stim)return; F.total++;
+  if(stim.type==='click'){ F.clkOk++; F.clkTot++; fDoOk(stim,cx,cy); }
+  else{ F.clkTot++; fDoBad(stim,cx,cy); }
+}
+
+function toggleFusionPause(){ if(!F.running)return; F.paused=!F.paused; document.getElementById('pause-overlay').classList.toggle('hidden',!F.paused); if(F.paused)cancelAnimationFrame(F.timerRAF); else{ clearFStims(); fSpawnNext(); } }
+function resumeGame(){ if(F.paused)toggleFusionPause(); if(GS.phase==='paused')GS.phase='idle'; document.getElementById('pause-overlay').classList.add('hidden'); }
+
+// ═══════════════════════════════════
+// NAVIGATION
+// ═══════════════════════════════════
+function goMenu(){
+  F.running=false; F.paused=false;
+  clearFStims(); clearTimeout(F.spawnTO); cancelAnimationFrame(F.timerRAF);
+  clearAllGridTOs();
+  document.getElementById('pause-overlay').classList.add('hidden');
+  document.getElementById('flow-banner').classList.remove('on');
+  document.getElementById('flow-vig').classList.remove('on');
+  document.getElementById('stress-border').className='';
+  updateMenuPBs();
+  showScr('boot-screen');
+}
+
+// ═══════════════════════════════════
+// INIT
+// ═══════════════════════════════════
+updateMenuPBs();
+document.getElementById('countdown-overlay').classList.add('hidden');
+</script>
+</body>
+</html>
